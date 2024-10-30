@@ -1,7 +1,7 @@
 ---
 title: "assignment-5"
 student: "Gisela Noguera Toffoletti"
-output: html_document
+output: github_document
 ---
 
 **Assignment 5: Data transformation and visualization - Part 2**
@@ -188,8 +188,8 @@ gapminder |>
 
 #### 2.7 Using the filtered dataset, identify the countries that had abnormal trends in life expectancy **by plotting**, and discuss historical events possibly explaining these trends. (Hint: facet by country)
 
-Answer: <span style="color:blue"> There are decreasing in life expectancy in some countries due to
-wars, such as Iraq and Korea.Dem.Rep</span>
+**Answer: There are decreasing in life expectancy in some countries due to
+wars, the lack of access to basic health services, or economic factors. Some countries as Afganistán suffer military conflicts**
 
 ```{r, include=FALSE}
 gapminder |> 
