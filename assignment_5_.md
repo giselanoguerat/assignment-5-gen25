@@ -26,6 +26,18 @@ Services of Harvard University.
 
 ``` r
 housing <- read_csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/landdata_states.csv")
+```
+
+    ## Rows: 7803 Columns: 11
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (2): State, region
+    ## dbl (9): Date, Home.Value, Structure.Cost, Land.Value, Land.Share..Pct., Hom...
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
 housing %>%
   head() %>% 
   kable() 
@@ -55,6 +67,16 @@ housing %>%
   are there from DC? Show the first 6 lines. <br> <br> **Answer:
   <span style="color:blue"> 153 records. </span>**
 
+``` r
+housing1 <- housing |> 
+  select(region, State, Land.Value, Date) |> 
+  filter(State == "DC") |> 
+  mutate(region = "South") |> 
+  head() |> 
+  kable()
+housing1
+```
+
 | region | State | Land.Value |    Date |
 |:-------|:------|-----------:|--------:|
 | South  | DC    |     290522 | 2003.00 |
@@ -70,6 +92,25 @@ housing %>%
 
 <br>
 
+``` r
+housing2 <- housing |> 
+  group_by(region, Date) |> 
+  summarise(
+    mean_land_value = mean(Land.Value)
+  ) |> 
+  filter(!is.na(region)) |> 
+  as.data.frame()
+```
+
+    ## `summarise()` has grouped output by 'region'. You can override using the
+    ## `.groups` argument.
+
+``` r
+housing2 |>
+  head() |> 
+  kable() 
+```
+
 | region  |    Date | mean_land_value |
 |:--------|--------:|----------------:|
 | Midwest | 1975.25 |        2452.167 |
@@ -82,6 +123,12 @@ housing %>%
 <br>
 
 #### 1.3 Using the tibble/dataframe from 1.2, plot the trend in mean land value of each region through time.
+
+``` r
+housing2 |> 
+  ggplot() +
+  geom_line(mapping = aes(Date, mean_land_value, colour = region))
+```
 
 ![](assignment_5__files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -114,11 +161,30 @@ gapminder %>%
 
 #### 2.1 Use a scatterplot to explore the relationship between per capita GDP (`gdpPercap`) and life expectancy (`lifeExp`) in the year 2007.
 
+``` r
+gapminder |> 
+  select(gdpPercap, lifeExp, year) |>
+  filter(year == "2007") |> 
+  ggplot() +
+  geom_point(aes(gdpPercap, lifeExp))
+```
+
 ![](assignment_5__files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 <br>
 
 #### 2.2 Add a smoothing line to the previous plot.
+
+``` r
+gapminder |> 
+  select(gdpPercap, lifeExp, year) |>
+  filter(year == "2007") |> 
+  ggplot() +
+  geom_point(aes(gdpPercap, lifeExp)) +
+  geom_smooth(aes(gdpPercap, lifeExp))
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 
 ![](assignment_5__files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
@@ -130,11 +196,34 @@ Note: only two Oceanian countries are included in this dataset, and
 `geom_smooth()` does not work with two data points, which is why they
 are excluded.
 
+``` r
+gapminder |> 
+  select(gdpPercap, lifeExp, year, continent) |>
+  filter(year == "2007", continent != "Oceania") |> 
+  ggplot() +
+  geom_point(aes(gdpPercap, lifeExp, colour = continent)) +
+  geom_smooth(aes(gdpPercap, lifeExp, group = continent, colour = continent), se = F)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
 ![](assignment_5__files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 <br>
 
 #### 2.4 Use faceting to solve the same problem. Include the confidence intervals in this plot.
+
+``` r
+gapminder |> 
+  select(gdpPercap, lifeExp, year, continent) |>
+  filter(year == "2007", continent != "Oceania") |> 
+  ggplot() +
+  geom_point(aes(gdpPercap, lifeExp, colour = continent)) +
+  geom_smooth(aes(gdpPercap, lifeExp, colour = continent), se = T) +
+   facet_wrap(~ continent, nrow = 2)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 
 ![](assignment_5__files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
@@ -142,11 +231,27 @@ are excluded.
 
 #### 2.5 Explore the trend in life expectancy through time in each continent. Color by continent.
 
+``` r
+gapminder |> 
+  ggplot(aes(year, lifeExp, group = country, colour = continent)) +
+  geom_smooth(se = FALSE) +
+  facet_wrap(~ continent, nrow = 2)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
 ![](assignment_5__files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 <br>
 
 #### 2.6 From the previous plot, we see some abnormal trends in Asia and Africa, where the the life expectancy in some countries sharply dropped at certain time periods. Here, we look into what happened in Asia in more detail. First, create a new dataset by filtering only the Asian countries. Show the first 6 lines of this filtered dataset.
+
+``` r
+gapminder |> 
+  filter(continent == "Asia") |> 
+  head() |> 
+  kable()
+```
 
 | country     | continent | year | lifeExp |      pop | gdpPercap |
 |:------------|:----------|-----:|--------:|---------:|----------:|
@@ -164,5 +269,35 @@ are excluded.
 **Answer: There are decreasing in life expectancy in some countries due
 to wars, the lack of access to basic health services, or economic
 factors. Some countries as Afganistán suffer military conflicts**
+
+``` r
+gapminder |> 
+  filter(continent == "Asia") |> 
+  ggplot(aes(year, lifeExp)) +
+  geom_smooth() +
+  facet_wrap(~ country)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+![](assignment_5__files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+``` r
+labs(title = "Trends in Life Expectancy in Asia",
+       x = "Year",
+       y = "Life Expectancy")
+```
+
+    ## $x
+    ## [1] "Year"
+    ## 
+    ## $y
+    ## [1] "Life Expectancy"
+    ## 
+    ## $title
+    ## [1] "Trends in Life Expectancy in Asia"
+    ## 
+    ## attr(,"class")
+    ## [1] "labels"
 
 <br>

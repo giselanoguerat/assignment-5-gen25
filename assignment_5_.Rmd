@@ -27,7 +27,7 @@ This excercise uses a dataset that describes the trends in land value
 variable `region`. This dataset was obtained from the Data Science
 Services of Harvard University.
 
-```{r, message = FALSE}
+```{r}
 housing <- read_csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/landdata_states.csv")
 housing %>%
   head() %>% 
@@ -48,7 +48,7 @@ housing %>%
 <br>
 **Answer: <span style="color:blue"> 153 records. </span>**
 
-```{r, echo = FALSE}
+```{r}
 housing1 <- housing |> 
   select(region, State, Land.Value, Date) |> 
   filter(State == "DC") |> 
@@ -63,7 +63,7 @@ housing1
 #### 1.2 Generate a tibble/dataframe that summarizes the mean land value of each region at each time point and show its first 6 lines.
 <br>
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r}
 housing2 <- housing |> 
   group_by(region, Date) |> 
   summarise(
@@ -79,7 +79,7 @@ housing2 |>
 
 #### 1.3 Using the tibble/dataframe from 1.2, plot the trend in mean land value of each region through time.
 
-```{r, echo = FALSE}
+```{r}
 housing2 |> 
   ggplot() +
   geom_line(mapping = aes(Date, mean_land_value, colour = region))
@@ -107,7 +107,7 @@ gapminder %>%
 
 #### 2.1 Use a scatterplot to explore the relationship between per capita GDP (`gdpPercap`) and life expectancy (`lifeExp`) in the year 2007.
 
-```{r, echo=FALSE}
+```{r}
 gapminder |> 
   select(gdpPercap, lifeExp, year) |>
   filter(year == "2007") |> 
@@ -119,7 +119,7 @@ gapminder |>
 
 #### 2.2 Add a smoothing line to the previous plot.
 
-```{r, message=FALSE, echo=FALSE}
+```{r}
 gapminder |> 
   select(gdpPercap, lifeExp, year) |>
   filter(year == "2007") |> 
@@ -137,7 +137,7 @@ Note: only two Oceanian countries are included in this dataset, and
 `geom_smooth()` does not work with two data points, which is why they
 are excluded.
 
-```{r, message=FALSE, echo=FALSE}
+```{r}
 gapminder |> 
   select(gdpPercap, lifeExp, year, continent) |>
   filter(year == "2007", continent != "Oceania") |> 
@@ -151,7 +151,7 @@ gapminder |>
 
 #### 2.4 Use faceting to solve the same problem. Include the confidence intervals in this plot.
 
-```{r, message=FALSE, echo=FALSE}
+```{r}
 gapminder |> 
   select(gdpPercap, lifeExp, year, continent) |>
   filter(year == "2007", continent != "Oceania") |> 
@@ -165,7 +165,7 @@ gapminder |>
 
 #### 2.5 Explore the trend in life expectancy through time in each continent. Color by continent.
 
-```{r, message=FALSE, echo=FALSE}
+```{r}
 gapminder |> 
   ggplot(aes(year, lifeExp, group = country, colour = continent)) +
   geom_smooth(se = FALSE) +
@@ -177,7 +177,7 @@ gapminder |>
 
 #### 2.6 From the previous plot, we see some abnormal trends in Asia and Africa, where the the life expectancy in some countries sharply dropped at certain time periods. Here, we look into what happened in Asia in more detail. First, create a new dataset by filtering only the Asian countries. Show the first 6 lines of this filtered dataset.
 
-```{r, echo = FALSE}
+```{r}
 gapminder |> 
   filter(continent == "Asia") |> 
   head() |> 
@@ -191,7 +191,7 @@ gapminder |>
 **Answer: There are decreasing in life expectancy in some countries due to
 wars, the lack of access to basic health services, or economic factors. Some countries as Afganistán suffer military conflicts**
 
-```{r, include=FALSE}
+```{r, echo=TRUE}
 gapminder |> 
   filter(continent == "Asia") |> 
   ggplot(aes(year, lifeExp)) +
